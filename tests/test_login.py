@@ -87,7 +87,7 @@ def test_user_logout(client, app):
     assert response.status_code == 200
 
     response = client.get("/logout", follow_redirects=True)
-    assert response.request.path == url_for('homepage.homepage')
+    assert response.request.path == url_for('homepage.home')
     assert response.status_code == 200
 
 def test_user_access_no_credential(client):
