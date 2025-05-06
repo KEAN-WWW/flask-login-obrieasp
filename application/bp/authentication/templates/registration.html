@@ -1,11 +1,40 @@
 {% extends "base.html" %}
-    {% from 'bootstrap5/form.html' import render_form, render_field, render_form_row %}
-
 {% block title %}Registration{% endblock %}
 {% block content %}
 
 <h1>User Registration Form</h1>
 
-    {{ render_form(form) }}
+<form method="POST" action="{{ url_for('authentication.register') }}">
+    {{ form.hidden_tag() }}
+
+    <div>
+        <label for="username">{{ form.username.label }}</label>
+        {{ form.username() }}
+    </div>
+
+    <div>
+        <label for="password">{{ form.password.label }}</label>
+        {{ form.password() }}
+    </div>
+
+    <div>
+        <label for="confirm_password">{{ form.confirm_password.label }}</label>
+        {{ form.confirm_password() }}
+    </div>
+
+    <div>
+        <button type="submit">Register</button>
+    </div>
+</form>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul>
+            {% for category, message in messages %}
+                <li class="alert alert-{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
 
 {% endblock %}

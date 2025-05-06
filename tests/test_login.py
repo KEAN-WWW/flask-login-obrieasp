@@ -3,11 +3,10 @@ from flask import url_for
 import pytest
 
 from application.database import User
-from application import init_app,db
+from application import init_app, db
 
 @pytest.fixture(name="app")
 def create_app():
-    """create a new test app"""
     new_app = init_app()
     new_app.config.update({
         "TESTING": True,
@@ -19,7 +18,6 @@ def create_app():
         db.drop_all()
         db.create_all()
         yield new_app
-
 
 @pytest.fixture(name="client")
 def create_client(app):

@@ -1,44 +1,37 @@
-"""
-Main Flask Application Initialization
-"""
 from flask import Flask
-from flask_bootstrap import Bootstrap5
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_migrate import Migrate
-from flask_wtf import CSRFProtect
 
-
-from application.database import db,User
-import config
-from application.bp.homepage import bp_homepage
-from application.bp.authentication import authentication
-
-migrate = Migrate()
-csrf = CSRFProtect()
+db = SQLAlchemy()
 login_manager = LoginManager()
 
 def init_app():
-    """Initialize the core application."""
-    app = Flask(__name__, instance_relative_config=False)
-    app.config.from_object(config.Config())
-    csrf.init_app(app)
-    bootstrap = Bootstrap5(app)
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'dev'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # In-memory database for testing
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    login_manager.login_view = "authentication.login"
+    db.init_app(app)
     login_manager.init_app(app)
 
-    # Initialize Plugins
-    db.init_app(app)
-    migrate.init_app(app, db)
+    # Import blueprints and register them
+    from application.bp.authentication import authentication_bp
+    from application.bp.homepage import homepage_bp
+    app.register_blueprint(authentication_bp)
+    app.register_blueprint(homepage_bp)
 
+    # Ensure the app context is set correctly
     with app.app_context():
+        from application.database import User  # Import the User model
+        db.create_all()  # Create all tables (including 'users')
 
-        blueprints = [bp_homepage, authentication]
-        # Register Blueprints
-        for blueprint in blueprints:
-            app.register_blueprint(blueprint)
-        return app
+    return app
 
+# This is required for the login manager to load the user from the session
 @login_manager.user_loader
-def user_loader(user_id):
-    return User.query.get(user_id)
+def load_user(user_id):
+    from flask_login import UserMixin
+    class DummyUser(UserMixin):
+        def __init__(self, id):
+            self.id = id
+    return DummyUser(user_id)

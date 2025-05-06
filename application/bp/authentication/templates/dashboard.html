@@ -1,7 +1,13 @@
-{% extends "base.html" %}
-
-{% block title %}Dashboard{% endblock %}
-{% block content %}
-    <h2>Dashboard</h2>
-    {{ name }}
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Welcome to the Dashboard</h1>
+    <p>Your User ID: {{ user_id }}</p>
+    <a href="{{ url_for('authentication.logout') }}">Logout</a>
+</body>
+</html>
