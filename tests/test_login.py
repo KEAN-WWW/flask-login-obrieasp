@@ -7,6 +7,7 @@ from application import init_app, db
 
 @pytest.fixture(name="app")
 def create_app():
+    """Test example case."""
     new_app = init_app()
     new_app.config.update({
         "TESTING": True,
